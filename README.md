@@ -8,6 +8,9 @@ alexandre.sac--morane@ens-paris-saclay.fr
 Adapted by Alexandre Sac--Morane the 03/11/2023
 alexandre.Sac-morane@uclouvain.be
 
+Please cite the following article: <br>
+Rattez H, Shi Y, Sac-Morane A, Klaeyle T, Mielniczuk B, Veveakis M (2022) Effect of grain size distribution on the shear band thickness evolution in sand. Géotechnique 72: 350-363. https://doi.org/10.1680/jgeot.20.P.120
+
 ----------------------------------------------------------------------
 Step 0 : Global Comment
 ----------------------------------------------------------------------

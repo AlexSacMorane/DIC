@@ -23,7 +23,8 @@ Step 0 : Global Comment
         - The Matlab file ent.m
         - The Matlab file PostProcessing.m
         - The Matlab file Displacement2D.m
-	- You must create folders png, png/displacement_field, png/e11, png/e12, png/e22
+
+    You must create folders png, png/displacement_field, png/e11, png/e12, png/e22
 
 ----------------------------------------------------------------------
 Step 1 : Rank pictures

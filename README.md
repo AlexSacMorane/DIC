@@ -206,3 +206,5 @@ Step 8 : Post Processing
 
     A strain is computed from the displacement map.
     A correction algorithm is applied to avoid errors.
+
+    It is not working...

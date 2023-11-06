@@ -48,9 +48,10 @@ for i =1:TimeStep:NImage-TimeStep
     V = zeros(2,Ntot);
     V1 = zeros(Nl,Nc);
     V2 = zeros(Nl,Nc);
-    e11 = zeros(Nl,Nc);
-    e22 = zeros(Nl,Nc);
-    e12 = zeros(Nl,Nc);
+    Discretisation_X = 0;
+    Discretisation_Y = 0;
+    Vector_X = 0;
+    Vector_Y = 0;
 
     % Iterate in the first picture on the extracted parts
     for l = 0: Nl-1
@@ -103,8 +104,103 @@ for i =1:TimeStep:NImage-TimeStep
             V(:,indice)=p2-p1;
             V1(l+1,c+1)=V(1,indice);
             V2(l+1,c+1)=V(2,indice);
-
+            % for plot
+            Discretisation_X(end+1) = p1(1);
+            Discretisation_Y(end+1) = p1(2);
+            Vector_X(end+1) = V(1,indice);
+            Vector_Y(end+1) = V(2,indice);         
+        end
     end
+         
+%% Plot and save displacement field
+
+    % Delete first component (used for initialisation)
+    Discretisation_X = Discretisation_X(2:end);
+    Discretisation_Y = Discretisation_Y(2:end);
+    Vector_X = Vector_X(2:end);
+    Vector_Y = Vector_Y(2:end);
+    
+    % Plot
+    NameFigure = ['At time ' int2str(i)]; 
+    figure('Name', NameFigure);
+    quiver(Discretisation_X,Discretisation_Y,Vector_X,Vector_Y)
+    set(gca,'ydir','normal');
+    set(gca,'DataAspectRatio',[1,1,1])
+    xlabel('x')
+    ylabel('y')
+    TitleName = ['Displacement field at time ' int2str(i)];
+    title(TitleName)
+    saveas(gcf,strcat('png/displacement_field/t_',int2str(i),'.png'))
+    close gcf
+    
+%% Compute, plot and save gradient field
+
+    % Initialisation
+    e11 = zeros(Nl,Nc);
+    e22 = zeros(Nl,Nc);
+    e12 = zeros(Nl,Nc);
+    
+    % Compute gradients
+    h=(SpatialStep+SizePixel(1))*thales;
+    [Gx1, Gy1] = gradient(V1,h);
+    [Gx2, Gy2] = gradient(V2,h);
+    X = zeros(Nl,Nc);
+    Y = zeros(Nl,Nc);
+    
+    for l = 1 : Nl
+        for c = 1 : Nc
+            indice = (l-1)*size(Maps,2) + c ;
+            X(l,c)= M1(1,indice);
+            Y(l,c)= M1(2,indice);
+            % Threshold value
+            e11(l,c) = Gx1(l,c);
+            e22(l,c)=Gy2(l,c);
+            e12(l,c)=(Gy1(l,c)+Gx2(l,c))/2;
+        end
+    end    
+    
+    % Plot e11
+    NameFigure = ['At time ' int2str(i)]; 
+    figure('Name', NameFigure);
+    surf(X,Y,e11,'EdgeColor', 'None', 'facecolor', 'interp')
+    set(gca,'DataAspectRatio',[1,1,1])
+    xlabel('x')
+    ylabel('y')
+    TitleName = ['\epsilon_{11} at time ' int2str(i)];
+    title(TitleName)
+    colorbar
+    view(2)
+    saveas(gcf,strcat('png/e11/t_',int2str(i),'.png'))
+    close gcf
+    
+    % Plot e22
+    NameFigure = ['At time ' int2str(i)]; 
+    figure('Name', NameFigure);
+    surf(X,Y,e22,'EdgeColor', 'None', 'facecolor', 'interp')
+    set(gca,'DataAspectRatio',[1,1,1])
+    xlabel('x')
+    ylabel('y')
+    TitleName = ['\epsilon_{22} at time ' int2str(i)];
+    title(TitleName)
+    colorbar
+    view(2)
+    saveas(gcf,strcat('png/e22/t_',int2str(i),'.png'))
+    close gcf
+    
+    % Plot e12
+    NameFigure = ['At time ' int2str(i)]; 
+    figure('Name', NameFigure);
+    surf(X,Y,e12,'EdgeColor', 'None', 'facecolor', 'interp')
+    set(gca,'DataAspectRatio',[1,1,1])
+    xlabel('x')
+    ylabel('y')
+    TitleName = ['\epsilon_{12} at time ' int2str(i)];
+    title(TitleName)
+    colorbar
+    view(2)
+    saveas(gcf,strcat('png/e12/t_',int2str(i),'.png'))
+    close gcf
+    
 end
 
 %% Saving
@@ -115,5 +211,5 @@ Displacement.Vector_X(ent(i,TimeStep)+1,:) = V(1,:);
 Displacement.Vector_Y(ent(i,TimeStep)+1,:) = V(2,:);
 Displacement.Maps = Maps;
 
-end
 toc
+end

@@ -384,7 +384,7 @@ surf(X,Y,e11Cut,'EdgeColor', 'None', 'facecolor', 'interp')
 set(gca,'DataAspectRatio',[1,1,1])
 xlabel('x')
 ylabel('y')
-TitleName = ['Slides at time ' int2str(IterationCounter)];
+TitleName = ['Slices at time ' int2str(IterationCounter)];
 title(TitleName)
 colorbar
 caxis([e11_min e11_max])

@@ -12,6 +12,44 @@ FolderName = 'camera1';
 % This name is used to save data
 FileName = 'Test.mat';
 
+%% Sort pictures
+
+% Put 1==1 if you  want to do this step
+% Put 1==0 if you  want to skip this step
+if 1==0
+    % Count the number of pictures
+    D = dir(FolderName);
+    size_D = size(D,1);
+    counter_no_file = 0;
+
+    % Count the number of file which are not pictures
+    for i = 1:size_D
+        if D(i).isdir
+            counter_no_file = counter_no_file + 1;
+        end
+    end    
+
+    number_picture = size_D - counter_no_file;
+
+    % Rename picture if the number is larger than 100
+    if number_picture >= 100
+        % Give a template for the name file
+        template_name = 'test18camera2_Movie_Ref_Step';
+        % Give the extension name
+        extension_name = '.jpeg';
+        % Change the name of pictures until 99
+        for i = 0:99
+            if i <10
+                chr = strcat('0',int2str(i));
+            else 
+                chr = int2str(i);
+            end
+            oldName = strcat(FolderName,'/',template_name,chr,extension_name);
+            newName = strcat(FolderName,'/',template_name,'0',chr,extension_name);
+            movefile(oldName,newName);
+        end
+    end
+end
 
 %% Show the picture and select the extract zone
 
@@ -24,7 +62,7 @@ if 1==0
     % The number 39 is a random number and can be changed
     image = readimage(images,39);
     % You can rotate the picture if you want
-    % The angle is in degree 
+    % The angle is in degree
     image=imrotate(image,-90);
     % A new window opens with your picture
     figure
@@ -51,7 +89,7 @@ thalesL = [0.1/3825.6170212766];
 %% Parameters of the postprocessing
 
 % Picture Folder
-images = imageDatastore(fullfile(FolderName));    
+images = imageDatastore(fullfile(FolderName));
 
 % Extract data
 e1sl = extraction(1);
@@ -91,18 +129,18 @@ if 1==0
     % Take a picture in the middle of the test
     % The number 30 is a random number and can be changed
     image = readimage(images,30);
-    % Rotate the picture 
+    % Rotate the picture
     view1 = imrotate(image,Orientation);
     % Extract the zone defined sooner
     extract1 = view1(e1sl:e1el,e1sc:e1ec);
-    
+
     % Compute the mesh
     Nl = (e1el-e1sl+1 - 2*limit) / (SizePixel(1)+SpatialStep);
     Nl = ent(Nl,1);
     Nc = (e1ec-e1sc+1 - 2*limit) / (SizePixel(2)+SpatialStep);
     Nc = ent(Nc,1);
     Ntot = Nl*Nc;
-    
+
     % Open a new figure window and show the mesh
     figure()
     imshow(extract1)

@@ -19,12 +19,11 @@ Step 0 : Global Comment
 
     To run DIC algorithm, you must have:
         - A folder with pictures
-        - The Matlab file main.m
+        - The Matlab file Main.m
         - The Matlab file ent.m
-        - The Matlab file PostProcessing.m
         - The Matlab file Displacement2D.m
 
-    You must create folders png, png/displacement_field, png/e11, png/e12, png/e22
+    You must create folders png, save
 
 ----------------------------------------------------------------------
 Step 1 : Rank pictures

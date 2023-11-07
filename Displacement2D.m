@@ -10,55 +10,56 @@ Ntot = Nl*Nc;
 NImage = size(images.Files);
 NImage = NImage(1);
 Ntimes = ent(NImage/TimeStep-1,1);
+    
+Maps = zeros(Nl,Nc);
+for l = 0: Nl-1
+    for c = 0 : Nc-1
+        indice = l*Nc + c +1;
+        Maps(l+1,c+1) = indice;
+    end
+end
 
 %% Saving Files
 
 Displacement = struct('Times',zeros(Ntimes,1),...
     'Discretisation_X',zeros(Ntimes,Ntot),'Discretisation_Y',zeros(Ntimes,Ntot),...
-    'Vector_X',zeros(Ntimes,Ntot),'Vector_Y',zeros(Ntimes,Ntot),'Maps',[]);
+    'Vector_X',zeros(Ntimes,Ntot),'Vector_Y',zeros(Ntimes,Ntot),'Maps',Maps,...
+    'e11',zeros(Nl,Nc,Ntimes),'e12',zeros(Nl,Nc,Ntimes),'e22',zeros(Nl,Nc,Ntimes));
 
 %% Correlation
 
 for i =1:TimeStep:NImage-TimeStep
-
+   
+    % Iterate on times
     Displacement.Times(ent(i,TimeStep)+1)=i;
 
+    % Extract first image (where samples are)
     view1 = rgb2gray(readimage(images,i));
     view1 = imrotate(view1,orientation);
     extract1 = view1(e1sl:e1el,e1sc:e1ec);
 
+    % Extract second image (where search zones are)
     view2 = rgb2gray(readimage(images,i+TimeStep));
     view2 = imrotate(view2,orientation);
     extract2 = view2(e1sl:e1el,e1sc:e1ec);
 
-%% Discretisation of the first picture
-% The first picture is where samples are extracted
-
-    Nl = (size(extract1,1) - 2*limit) / (SizePixel(1)+SpatialStep);
-    Nl = ent(Nl,1);
-    Nc = (size(extract1,2) - 2*limit) / (SizePixel(2)+SpatialStep);
-    Nc = ent(Nc,1);
-    Ntot = Nl*Nc;
-
 %% Correlation
 
-    Maps = zeros(Nl,Nc);
     M1 = zeros(2,Ntot);
     M2 = zeros(2,Ntot);
     V = zeros(2,Ntot);
     V1 = zeros(Nl,Nc);
     V2 = zeros(Nl,Nc);
-    Discretisation_X = 0;
-    Discretisation_Y = 0;
-    Vector_X = 0;
-    Vector_Y = 0;
+    Discretisation_X = zeros(Ntot);
+    Discretisation_Y = zeros(Ntot);
+    Vector_X = zeros(Ntot);
+    Vector_Y = zeros(Ntot);
 
     % Iterate in the first picture on the extracted parts
     for l = 0: Nl-1
         for c = 0 : Nc-1
 
             indice = l*Nc + c +1;
-            Maps(l+1,c+1) = indice;
             disp(strcat('Iteration on time:_',int2str(Ntimes),'_max'))
             disp(ent(i,TimeStep)+1)
             disp('Iteration on space')
@@ -105,35 +106,14 @@ for i =1:TimeStep:NImage-TimeStep
             V1(l+1,c+1)=V(1,indice);
             V2(l+1,c+1)=V(2,indice);
             % for plot
-            Discretisation_X(end+1) = p1(1);
-            Discretisation_Y(end+1) = p1(2);
-            Vector_X(end+1) = V(1,indice);
-            Vector_Y(end+1) = V(2,indice);         
+            Discretisation_X(indice) = p1(1);
+            Discretisation_Y(indice) = p1(2);
+            Vector_X(indice) = V(1,indice);
+            Vector_Y(indice) = V(2,indice);         
         end
     end
-         
-%% Plot and save displacement field
-
-    % Delete first component (used for initialisation)
-    Discretisation_X = Discretisation_X(2:end);
-    Discretisation_Y = Discretisation_Y(2:end);
-    Vector_X = Vector_X(2:end);
-    Vector_Y = Vector_Y(2:end);
-    
-    % Plot
-    NameFigure = ['At time ' int2str(i)]; 
-    figure('Name', NameFigure);
-    quiver(Discretisation_X,Discretisation_Y,Vector_X,Vector_Y)
-    set(gca,'ydir','normal');
-    set(gca,'DataAspectRatio',[1,1,1])
-    xlabel('x')
-    ylabel('y')
-    TitleName = ['Displacement field at time ' int2str(i)];
-    title(TitleName)
-    saveas(gcf,strcat('png/displacement_field/t_',int2str(i),'.png'))
-    close gcf
-    
-%% Compute, plot and save gradient field
+             
+%% Compute gradient field
 
     % Initialisation
     e11 = zeros(Nl,Nc);
@@ -152,16 +132,30 @@ for i =1:TimeStep:NImage-TimeStep
             indice = (l-1)*size(Maps,2) + c ;
             X(l,c)= M1(1,indice);
             Y(l,c)= M1(2,indice);
-            % Threshold value
             e11(l,c) = Gx1(l,c);
-            e22(l,c)=Gy2(l,c);
-            e12(l,c)=(Gy1(l,c)+Gx2(l,c))/2;
+            e22(l,c) = Gy2(l,c);
+            e12(l,c) =(Gy1(l,c)+Gx2(l,c))/2;
         end
-    end    
+    end   
+
     
-    % Plot e11
+%% Plot displacement field and strain fields
+    
     NameFigure = ['At time ' int2str(i)]; 
     figure('Name', NameFigure);
+    
+    % Plot displacement field
+    subplot(221)
+    quiver(Discretisation_X,Discretisation_Y,Vector_X,Vector_Y,10)
+    set(gca,'ydir','normal');
+    set(gca,'DataAspectRatio',[1,1,1])
+    xlabel('x')
+    ylabel('y')
+    TitleName = ['Displacement field at time ' int2str(i)];
+    title(TitleName)
+    
+    % Plot e11
+    subplot(222)
     surf(X,Y,e11,'EdgeColor', 'None', 'facecolor', 'interp')
     set(gca,'DataAspectRatio',[1,1,1])
     xlabel('x')
@@ -170,12 +164,9 @@ for i =1:TimeStep:NImage-TimeStep
     title(TitleName)
     colorbar
     view(2)
-    saveas(gcf,strcat('png/e11/t_',int2str(i),'.png'))
-    close gcf
     
     % Plot e22
-    NameFigure = ['At time ' int2str(i)]; 
-    figure('Name', NameFigure);
+    subplot(223)
     surf(X,Y,e22,'EdgeColor', 'None', 'facecolor', 'interp')
     set(gca,'DataAspectRatio',[1,1,1])
     xlabel('x')
@@ -184,12 +175,9 @@ for i =1:TimeStep:NImage-TimeStep
     title(TitleName)
     colorbar
     view(2)
-    saveas(gcf,strcat('png/e22/t_',int2str(i),'.png'))
-    close gcf
     
     % Plot e12
-    NameFigure = ['At time ' int2str(i)]; 
-    figure('Name', NameFigure);
+    subplot(224)
     surf(X,Y,e12,'EdgeColor', 'None', 'facecolor', 'interp')
     set(gca,'DataAspectRatio',[1,1,1])
     xlabel('x')
@@ -198,18 +186,22 @@ for i =1:TimeStep:NImage-TimeStep
     title(TitleName)
     colorbar
     view(2)
-    saveas(gcf,strcat('png/e12/t_',int2str(i),'.png'))
+    
+    saveas(gcf,strcat('png/t_',int2str(i),'.png'))
     close gcf
     
-end
 
 %% Saving
 
-Displacement.Discretisation_X(ent(i,TimeStep)+1,:) = M1(1,:);
-Displacement.Discretisation_Y(ent(i,TimeStep)+1,:) = M1(2,:);
-Displacement.Vector_X(ent(i,TimeStep)+1,:) = V(1,:);
-Displacement.Vector_Y(ent(i,TimeStep)+1,:) = V(2,:);
-Displacement.Maps = Maps;
-
+    Displacement.Discretisation_X(ent(i,TimeStep)+1,:) = M1(1,:);
+    Displacement.Discretisation_Y(ent(i,TimeStep)+1,:) = M1(2,:);
+    Displacement.Vector_X(ent(i,TimeStep)+1,:) = V(1,:);
+    Displacement.Vector_Y(ent(i,TimeStep)+1,:) = V(2,:);
+    Displacement.Maps = Maps;
+    Displacement.e11(:,:,ent(i,TimeStep)+1) = e11(:,:);
+    Displacement.e12(:,:,ent(i,TimeStep)+1) = e12(:,:);
+    Displacement.e22(:,:,ent(i,TimeStep)+1) = e22(:,:);
+    
+end
 toc
 end

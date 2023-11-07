@@ -179,9 +179,8 @@ Step 7 : Save data
 
     Save following data :
         - Displacement
-    This is a structure with the discretization following x and y, the displacement following x and y and a returning map
+    This is a structure with the discretization following x and y, the displacement following x and y, a returning map and the strain (e11, e12, e22) fields at different time
         - extraction
-        - the images (not needed and can take space, you can delete this save)
         - PictureOrientation
         - thalesL
         - TimeStep
@@ -189,4 +188,5 @@ Step 7 : Save data
         - SpatialStep
         - SizePixel
 
-    The data are saved in the folder you gave with the name you gave.
+    The data are saved in the folder save with the name you gave.
+    Pictures are created in the folder png.

@@ -191,20 +191,3 @@ Step 7 : Save data
         - SizePixel
 
     The data are saved in the folder you gave with the name you gave.
-
-----------------------------------------------------------------------
-Step 8 : Post Processing
-----------------------------------------------------------------------
-
-    Now we can open the PostProcessing.m file
-
-    In the section 'Parameters of the post proccessing', you need to fill :
-        - The name of the Folder
-        - The name of the data file
-        - the min and max value for the strain (only display parameters)
-        - the starting and ending times
-
-    A strain is computed from the displacement map.
-    A correction algorithm is applied to avoid errors.
-
-    It is not working...

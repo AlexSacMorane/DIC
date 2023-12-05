@@ -75,16 +75,16 @@ end
 % Run the previous one to fill those information
 % Help is given in the README.md
 
-extraction = [216 ;
-              1090;
-              400 ;
-              790];
+extraction = [287 ;
+              287+764;
+              385 ;
+              385+386];
 
 % Orientation of picture
 PictureOrientation = [-90];
 
 % Scalling Factor
-thalesL = [0.1/3825.6170212766];
+thalesL = [1];
 
 %% Parameters of the postprocessing
 
@@ -105,7 +105,7 @@ Orientation = PictureOrientation(1);
 thales=thalesL(1);
 
 % Time Step
-TimeStep = 1;
+TimeStep = 3;
 
 % Limits
 limit = 5 ;
@@ -170,3 +170,5 @@ save(strcat('save/',FileName),'Displacement',...
     'thales','TimeStep','limit','SpatialStep','SizePixel');
 
 toc
+
+% Now you can run the PostProcessing.m file (see the README)

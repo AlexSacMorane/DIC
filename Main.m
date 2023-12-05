@@ -6,7 +6,7 @@ tic
 
 % The name of the pictures folder
 % There is one folder per camera spot
-FolderName = 'camera1';
+FolderName = 'images_1';
 
 % The name of the simulation (it must end with '.mat')
 % This name is used to save data

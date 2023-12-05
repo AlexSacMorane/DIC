@@ -201,12 +201,6 @@ for i =1:TimeStep:NImage-TimeStep
     Displacement.e11(:,:,ent(i,TimeStep)+1) = e11(:,:);
     Displacement.e12(:,:,ent(i,TimeStep)+1) = e12(:,:);
     Displacement.e22(:,:,ent(i,TimeStep)+1) = e22(:,:);
-
-%% Saving
-
-    save(strcat('save/e11/e11_',int2str(i),'.mat'),'e11');
-    save(strcat('save/e12/e12_',int2str(i),'.mat'),'e12');
-    save(strcat('save/e22/e22_',int2str(i),'.mat'),'e22');
     
 end
 toc

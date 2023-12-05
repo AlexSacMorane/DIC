@@ -171,20 +171,7 @@ Step 6 : Running
     The increase of the plate can be computed, you must fix the parameter p2
     in the function 'Displacement2D.m'. If it can be automated it will be nice
 
-----------------------------------------------------------------------
-Step 6 : Post Processing
-----------------------------------------------------------------------
-    Go to 'PostProcessing.m' Matlab function.
-    Here you can show results and you can apply data correction
-    You have only to put the good file on the variable 's' and the value of
-    the time-lapse parameter 'TimeLapse'.
-    The first figure opens to show you the extracted zone
-    Others figure open to show you displacement and deformation during time.
-    The displacement and deformation are computed between 2 times (TimeLapse*StepTime)
-    The last figure opens and show you the evolution of the shear band width
-
-    Comment : Data correction is coded but not in this function
-    The shear band detection is not working good.
+    Comment : Data correction is coded but not used in this function
 
 ----------------------------------------------------------------------
 Step 7 : Save data
@@ -203,3 +190,20 @@ Step 7 : Save data
 
     The data are saved in the folder save with the name you gave.
     Pictures are created in the folder png.
+
+----------------------------------------------------------------------
+Step 8 : Post Processing
+----------------------------------------------------------------------
+    Go to 'PostProcessing.m' Matlab function.
+    Fill the Folder and File names. Normally FolderName is 'save' and FileName must end with '.mat'.
+    Fill the start time ts and the end time te for the postprocessing.
+
+    A Gaussian profile is interpolated from 3 x/y slices to determine the shear band width.
+    Some initial values are needed for this interpolation.
+    Please see https://fr.mathworks.com/help/curvefit/gaussian.html
+    This documentation will help you to play easily with the parameters and find a good set.
+    Once you have it, please fill the parameters InitialParameterX(i,3) and InitialParameterY(i,3).
+
+    The evolution of the shear band is saved and plotted. 
+    
+    

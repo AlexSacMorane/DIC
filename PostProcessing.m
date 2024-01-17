@@ -17,18 +17,23 @@ FileName = 'Test.mat';
 ts = 1; % start
 te = 35; % stop
 
+% Set a threshold value
+% values lower or greater than this will be considered as error
+% Need to be set for every postprocessing
+min_max_eps = 0.06;
+
 %% Load the data
 
 s = load(strcat(FolderName,'/',... %Folder name
-                FileName)); % File name 
+                FileName)); % File name
 
 %% Read data and Initialization
 
 % Read data
-TimeStep = s.TimeStep ; % the time step used 
+TimeStep = s.TimeStep ; % the time step used
 Maps = s.Displacement.Maps; % the mesh used
 Times = s.Displacement.Times; % the list of the time you used
-M1 = s.Displacement.Discretisation_X(1,:); % The x coordinates of the mesh 
+M1 = s.Displacement.Discretisation_X(1,:); % The x coordinates of the mesh
 M2 = s.Displacement.Discretisation_Y(1,:); % The x coordinates of the mesh
 
 % Initialization
@@ -43,8 +48,8 @@ for t = ts:te
     % Read strain maps
     e11 = s.Displacement.e11(:,:,t);
     e12 = s.Displacement.e12(:,:,t);
-    e22 = s.Displacement.e22(:,:,t);    
-    
+    e22 = s.Displacement.e22(:,:,t);
+
     % Build the map of X and Y
     X = zeros(size(Maps));
     Y = zeros(size(Maps));
@@ -54,9 +59,64 @@ for t = ts:te
             X(l,c)= M1(indice);
             Y(l,c)= M2(indice);
         end
-    end   
-    
-    % Build the list of x/y axis for the slices 
+    end
+
+    % Adapt strain maps with the threshold value
+    for l = 1 : size(Maps,1)
+        for c = 1 : size(Maps,2)
+          if e11(l,c) < - min_max_eps || min_max_eps < e11(l,c)
+            e11(l,c) = 0;
+          end
+          if e12(l,c) < - min_max_eps || min_max_eps < e12(l,c)
+            e12(l,c) = 0;
+          end
+          if e22(l,c) < - min_max_eps || min_max_eps < e22(l,c)
+            e22(l,c) = 0;
+          end
+        end
+    end
+
+    % Replot the figure
+    NameFigure = ['Iteration ' int2str(t-ts+1)];
+    figure('Name', NameFigure);
+
+    % Plot e11
+    subplot(131)
+    surf(X,Y,e11,'EdgeColor', 'None', 'facecolor', 'interp')
+    set(gca,'DataAspectRatio',[1,1,1])
+    xlabel('x')
+    ylabel('y')
+    TitleName = ['\epsilon_{11} at time ' int2str(i)];
+    title(TitleName)
+    colorbar
+    view(2)
+
+    % Plot e22
+    subplot(132)
+    surf(X,Y,e22,'EdgeColor', 'None', 'facecolor', 'interp')
+    set(gca,'DataAspectRatio',[1,1,1])
+    xlabel('x')
+    ylabel('y')
+    TitleName = ['\epsilon_{22} at time ' int2str(i)];
+    title(TitleName)
+    colorbar
+    view(2)
+
+    % Plot e12
+    subplot(133)
+    surf(X,Y,e12,'EdgeColor', 'None', 'facecolor', 'interp')
+    set(gca,'DataAspectRatio',[1,1,1])
+    xlabel('x')
+    ylabel('y')
+    TitleName = ['\epsilon_{12} at time ' int2str(i)];
+    title(TitleName)
+    colorbar
+    view(2)
+
+    saveas(gcf,strcat('png/pp_t_',int2str(t-ts+1),'.png'))
+    close gcf
+
+    % Build the list of x/y axis for the slices
     ListCutY = X(1,:); % list of x
     StepX = abs(ListCutY(2)-ListCutY(1));
     ListCutX = Y(:,1)'; % list of y
@@ -68,9 +128,9 @@ for t = ts:te
 
     if t==ts
         % Here the overview is on e11
-        % It can be on other strain map, just change 
+        % It can be on other strain map, just change
         % The same slices are used for the other strain maps
-        
+
         % Create the figure
         ViewE11 = figure('Name','Overlook on \epsilon11');
         surf(X,Y,e11,'EdgeColor', 'None', 'facecolor', 'interp')
@@ -108,14 +168,14 @@ for t = ts:te
 %% Gaussian Interpolation
 % The interpolation is made on e11 but you can change the strain map
 % Initialization of the first parameters
-   
+
     if t == ts
         % x slices
-        InitialParameterX = zeros(3,3); 
+        InitialParameterX = zeros(3,3);
         i=1;
         % iterate on the slices indices
         for c = IndiceCutX
-            LTempo = zeros(1,size(Maps,1));     
+            LTempo = zeros(1,size(Maps,1));
             % iterate on the y
             for l = 1:size(Maps,1)
                 LTempo(l) = e11(l,c);
@@ -123,7 +183,7 @@ for t = ts:te
             InitialParameterX(i,1) = max(LTempo); % Initialization on a1x
             Max1 = find(LTempo == max(LTempo)); % find the max
             InitialParameterX(i,2) = ListCutX(Max1(1)); % Initialisation on b1x
-            InitialParameterX(i,3) = 0.02; % Initialisation on c1x 
+            InitialParameterX(i,3) = 0.02; % Initialisation on c1x
             % The parameter cly must be tried and changed if needed
             % It is the width of the sb guessed
             i=i+1;
@@ -134,7 +194,7 @@ for t = ts:te
         i = 1;
         % iterate on the slices indices
         for l = IndiceCutY
-            LTempo = zeros(1,size(Maps,2)); 
+            LTempo = zeros(1,size(Maps,2));
             % iterate on the x
             for c = 1:size(Maps,2)
                 LTempo(c) = e11(l,c);
@@ -142,12 +202,12 @@ for t = ts:te
             InitialParameterY(i,1) = max(LTempo); % Initialization on a1y
             Max1 = find(LTempo == max(LTempo)); % find the max
             InitialParameterY(i,2) = ListCutY(Max1(1)); % Initialization on b1y
-            InitialParameterY(i,3) = 0.01; % Initialisation on c1y 
+            InitialParameterY(i,3) = 0.01; % Initialisation on c1y
             % The parameter cly must be tried and changed if needed
             % It is the width of the sb guessed
             i = i+1;
-        end  
-        
+        end
+
         % To define initial value of c, please see https://fr.mathworks.com/help/curvefit/gaussian.html
         % This documentation will help you to play easily with the
         % parameter and find  the good set
@@ -161,13 +221,13 @@ for t = ts:te
     c1XL = [0 0 0];
     c1YL = [0 0 0];
 
-    % Iteration on the slices    
+    % Iteration on the slices
     for  i = 1:3
         % fit
         fitresultX = fit(ListCutX', e11(:,IndiceCutX(i)), 'gauss1',...
-                        'StartPoint',[InitialParameterX(i,1),InitialParameterX(i,2),InitialParameterX(i,3)]);  
+                        'StartPoint',[InitialParameterX(i,1),InitialParameterX(i,2),InitialParameterX(i,3)]);
         % look for the parameter c, the variance
-        c1X = fitresultX.c1; 
+        c1X = fitresultX.c1;
         c1XL(i) = fitresultX.c1;
         % update initial guess for next interpolation
         InitialParameterX(i,:)= [fitresultX.a1 fitresultX.b1 fitresultX.c1];
@@ -177,7 +237,7 @@ for t = ts:te
                          'StartPoint',[InitialParameterY(i,1),InitialParameterY(i,2),InitialParameterY(i,3)]);
         % look for the parameter c, the variance
         c1Y = fitresultY.c1;
-        c1YL(i) = c1Y; 
+        c1YL(i) = c1Y;
         % update initial guess for next interpolation
         InitialParameterY(i,:)= [fitresultY.a1 fitresultY.b1 fitresultY.c1];
     end
@@ -185,12 +245,12 @@ for t = ts:te
 %% Compute the real width of the shear band
 
     % iterate on the slice
-    for i = 1:3    
+    for i = 1:3
         ListWidthX(i,t-ts+1) = 2*sqrt(log(2))*c1XL(i);
         ListWidthY(i,t-ts+1) = 2*sqrt(log(2))*c1YL(i);
         ListWidth(i,t-ts+1) = (2*sqrt(log(2))*c1XL(i)*c1YL(i))/(sqrt((c1XL(i)^2+c1YL(i)^2)));
     end
-    
+
     % Compute the mean
     ListWidthX(4,t-ts+1) = 2*sqrt(log(2))*mean(c1XL);
     ListWidthY(4,t-ts+1) = 2*sqrt(log(2))*mean(c1YL);
@@ -219,4 +279,3 @@ title('Real Width')
 
 saveas(gcf,strcat('png/Evolution_SB_width.png'))
 close gcf
-

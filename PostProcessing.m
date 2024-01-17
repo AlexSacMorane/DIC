@@ -86,7 +86,7 @@ for t = ts:te
     set(gca,'DataAspectRatio',[1,1,1])
     xlabel('x')
     ylabel('y')
-    TitleName = ['\epsilon_{11} at time ' int2str(i)];
+    TitleName = ['\epsilon_{11} at time ' int2str(t-ts+1)];
     title(TitleName)
     colorbar
     view(2)
@@ -97,7 +97,7 @@ for t = ts:te
     set(gca,'DataAspectRatio',[1,1,1])
     xlabel('x')
     ylabel('y')
-    TitleName = ['\epsilon_{22} at time ' int2str(i)];
+    TitleName = ['\epsilon_{22} at time ' int2str(t-ts+1)];
     title(TitleName)
     colorbar
     view(2)
@@ -108,7 +108,7 @@ for t = ts:te
     set(gca,'DataAspectRatio',[1,1,1])
     xlabel('x')
     ylabel('y')
-    TitleName = ['\epsilon_{12} at time ' int2str(i)];
+    TitleName = ['\epsilon_{12} at time ' int2str(t-ts+1)];
     title(TitleName)
     colorbar
     view(2)

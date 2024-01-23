@@ -14,13 +14,13 @@ FileName = 'Test.mat';
 % The iteration limits
 % To have a faster script, you can focus on iterations where the shear band
 % changes (see pictures generated)
-ts = 1; % start
-te = 35; % stop
+ts = 15; % start
+te = 23; % stop
 
 % Set a threshold value
 % values lower or greater than this will be considered as error
 % Need to be set for every postprocessing
-min_max_eps = 0.06;
+min_max_eps = 0.5;
 
 %% Load the data
 
@@ -64,13 +64,13 @@ for t = ts:te
     % Adapt strain maps with the threshold value
     for l = 1 : size(Maps,1)
         for c = 1 : size(Maps,2)
-          if e11(l,c) < - min_max_eps || min_max_eps < e11(l,c)
+          if e11(l,c) < 0 || min_max_eps < e11(l,c)
             e11(l,c) = 0;
           end
-          if e12(l,c) < - min_max_eps || min_max_eps < e12(l,c)
+          if e12(l,c) < 0 || min_max_eps < e12(l,c)
             e12(l,c) = 0;
           end
-          if e22(l,c) < - min_max_eps || min_max_eps < e22(l,c)
+          if e22(l,c) < 0 || min_max_eps < e22(l,c)
             e22(l,c) = 0;
           end
         end
@@ -183,7 +183,7 @@ for t = ts:te
             InitialParameterX(i,1) = max(LTempo); % Initialization on a1x
             Max1 = find(LTempo == max(LTempo)); % find the max
             InitialParameterX(i,2) = ListCutX(Max1(1)); % Initialisation on b1x
-            InitialParameterX(i,3) = 0.02; % Initialisation on c1x
+            InitialParameterX(i,3) = 2; % Initialisation on c1x
             % The parameter cly must be tried and changed if needed
             % It is the width of the sb guessed
             i=i+1;
@@ -202,7 +202,7 @@ for t = ts:te
             InitialParameterY(i,1) = max(LTempo); % Initialization on a1y
             Max1 = find(LTempo == max(LTempo)); % find the max
             InitialParameterY(i,2) = ListCutY(Max1(1)); % Initialization on b1y
-            InitialParameterY(i,3) = 0.01; % Initialisation on c1y
+            InitialParameterY(i,3) = 3; % Initialisation on c1y
             % The parameter cly must be tried and changed if needed
             % It is the width of the sb guessed
             i = i+1;
@@ -221,6 +221,11 @@ for t = ts:te
     c1XL = [0 0 0];
     c1YL = [0 0 0];
 
+    % Plot the result
+    NameFigure = ['Iteration ' int2str(t-ts+1)];
+    f=figure('Name', NameFigure);
+    f.Position = [1 31 1280 617];
+    
     % Iteration on the slices
     for  i = 1:3
         % fit
@@ -240,7 +245,25 @@ for t = ts:te
         c1YL(i) = c1Y;
         % update initial guess for next interpolation
         InitialParameterY(i,:)= [fitresultY.a1 fitresultY.b1 fitresultY.c1];
+    
+        % Plot fit x-i
+        subplot(3,2,2*i-1)
+        plot(fitresultX, ListCutX, e11(:,IndiceCutX(i)),'o')
+        title(['X constant, slice ' int2str(i)])
+        xlabel('Y')
+        ylabel('\Delta\epsilon11')
+        % Plot fit y-i
+        subplot(3,2,2*i)
+        plot(fitresultY, ListCutY, e11(IndiceCutY(i),:),'o')
+        title(['Y constant, slice ' int2str(i)])
+        xlabel('X')
+        ylabel('\Delta\epsilon11')
+    
     end
+    
+    saveas(gcf,strcat('png/pp_fit_t_',int2str(t-ts+1),'.png'))
+    close gcf
+    
 
 %% Compute the real width of the shear band
 

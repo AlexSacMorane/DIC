@@ -269,14 +269,14 @@ for t = ts:te
 
     % iterate on the slice
     for i = 1:3
-        ListWidthX(i,t-ts+1) = 2*sqrt(log(2))*c1XL(i);
-        ListWidthY(i,t-ts+1) = 2*sqrt(log(2))*c1YL(i);
-        ListWidth(i,t-ts+1) = (2*sqrt(log(2))*c1XL(i)*c1YL(i))/(sqrt((c1XL(i)^2+c1YL(i)^2)));
+        ListWidthX(i,t-ts+1) = 2*sqrt(2*log(2))*c1XL(i);
+        ListWidthY(i,t-ts+1) = 2*sqrt(2*log(2))*c1YL(i);
+        ListWidth(i,t-ts+1) = (ListWidthX(i,t-ts+1)*ListWidthY(i,t-ts+1))/(sqrt(ListWidthX(i,t-ts+1)^2+ListWidthY(i,t-ts+1)^2)));
     end
 
     % Compute the mean
-    ListWidthX(4,t-ts+1) = 2*sqrt(log(2))*mean(c1XL);
-    ListWidthY(4,t-ts+1) = 2*sqrt(log(2))*mean(c1YL);
+    ListWidthX(4,t-ts+1) = 2*sqrt(2*log(2))*mean(c1XL);
+    ListWidthY(4,t-ts+1) = 2*sqrt(2*log(2))*mean(c1YL);
     ListWidth(4,t-ts+1) = (2*sqrt(log(2))*mean(c1XL)*mean(c1YL))/(sqrt((mean(c1XL)^2+mean(c1YL)^2)));
 
 end

@@ -277,7 +277,7 @@ for t = ts:te
     % Compute the mean
     ListWidthX(4,t-ts+1) = 2*sqrt(2*log(2))*mean(c1XL);
     ListWidthY(4,t-ts+1) = 2*sqrt(2*log(2))*mean(c1YL);
-    ListWidth(4,t-ts+1) = (2*sqrt(log(2))*mean(c1XL)*mean(c1YL))/(sqrt((mean(c1XL)^2+mean(c1YL)^2)));
+    ListWidth(4,t-ts+1) = (ListWidthX(4,t-ts+1)*ListWidthY(4,t-ts+1))/(sqrt(ListWidthX(4,t-ts+1)^2+ListWidthY(4,t-ts+1)^2)));
 
 end
 

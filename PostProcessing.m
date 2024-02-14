@@ -271,13 +271,13 @@ for t = ts:te
     for i = 1:3
         ListWidthX(i,t-ts+1) = 2*sqrt(2*log(2))*c1XL(i);
         ListWidthY(i,t-ts+1) = 2*sqrt(2*log(2))*c1YL(i);
-        ListWidth(i,t-ts+1) = (ListWidthX(i,t-ts+1)*ListWidthY(i,t-ts+1))/(sqrt(ListWidthX(i,t-ts+1)^2+ListWidthY(i,t-ts+1)^2)));
+        ListWidth(i,t-ts+1) = (ListWidthX(i,t-ts+1)*ListWidthY(i,t-ts+1))/(sqrt(ListWidthX(i,t-ts+1)^2+ListWidthY(i,t-ts+1)^2));
     end
 
     % Compute the mean
     ListWidthX(4,t-ts+1) = 2*sqrt(2*log(2))*mean(c1XL);
     ListWidthY(4,t-ts+1) = 2*sqrt(2*log(2))*mean(c1YL);
-    ListWidth(4,t-ts+1) = (ListWidthX(4,t-ts+1)*ListWidthY(4,t-ts+1))/(sqrt(ListWidthX(4,t-ts+1)^2+ListWidthY(4,t-ts+1)^2)));
+    ListWidth(4,t-ts+1) = (ListWidthX(4,t-ts+1)*ListWidthY(4,t-ts+1))/(sqrt(ListWidthX(4,t-ts+1)^2+ListWidthY(4,t-ts+1)^2));
 
 end
 
@@ -287,18 +287,56 @@ save(strcat('save/pp_',FileName),'IndiceCutX','IndiceCutY','ListWidthX','ListWid
 
 %% Plot
 
-figure('Name','Evolution of the width')
+figure('Name','Evolution of the width (1)')
+subplot(311)
+plot(ts:te,ListWidthX(1,:),'-.x')
+title('Cut following X')
+subplot(312)
+plot(ts:te, ListWidthY(1,:),'-.x')
+title('Cut following Y')
+subplot(313)
+plot(ts:te, ListWidth(1,:),'-.x')
+title('Real Width')
+saveas(gcf,strcat('png/Evolution_SB_width_1.png'))
+close gcf
+
+figure('Name','Evolution of the width (2)')
+subplot(311)
+plot(ts:te,ListWidthX(2,:),'-.x')
+title('Cut following X')
+subplot(312)
+plot(ts:te, ListWidthY(2,:),'-.x')
+title('Cut following Y')
+subplot(313)
+plot(ts:te, ListWidth(2,:),'-.x')
+title('Real Width')
+saveas(gcf,strcat('png/Evolution_SB_width_2.png'))
+close gcf
+
+figure('Name','Evolution of the width (3)')
+subplot(311)
+plot(ts:te,ListWidthX(3,:),'-.x')
+title('Cut following X')
+subplot(312)
+plot(ts:te, ListWidthY(3,:),'-.x')
+title('Cut following Y')
+subplot(313)
+plot(ts:te, ListWidth(3,:),'-.x')
+title('Real Width')
+saveas(gcf,strcat('png/Evolution_SB_width_3.png'))
+close gcf
+
+saveas(gcf,strcat('png/Evolution_SB_width_mean.png'))
+close gcf
+figure('Name','Evolution of the width (mean)')
 subplot(311)
 plot(ts:te,ListWidthX(4,:),'-.x')
 title('Cut following X')
-
 subplot(312)
 plot(ts:te, ListWidthY(4,:),'-.x')
 title('Cut following Y')
-
 subplot(313)
 plot(ts:te, ListWidth(4,:),'-.x')
 title('Real Width')
-
-saveas(gcf,strcat('png/Evolution_SB_width.png'))
+saveas(gcf,strcat('png/Evolution_SB_width_mean.png'))
 close gcf
